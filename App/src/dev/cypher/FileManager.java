@@ -1,10 +1,8 @@
 package dev.cypher;
 
-import java.io.BufferedReader;
-
 interface FileManager {
-    BufferedReader readFile(String path);
+    String readFile(String path);
     boolean writeFile(String path, String body);
-    void createFile(String filename, boolean state);
+    void createFile(String filename);
     void createDirectory(String src);
 }

@@ -5,9 +5,6 @@ import java.io.*;
 final public class Caesar implements Cypher {
 
     private int key;
-    private BufferedWriter writer;
-    private BufferedReader reader;
-    private String dirname = "", filename;
 
     public Caesar(){
         // Default Caesar cypher key
@@ -20,88 +17,41 @@ final public class Caesar implements Cypher {
 
     @Override
     public String encode(String plainText) {
-        try {
-            String line;
-            if(!dirname.equals("")){
-                reader = new BufferedReader(new FileReader(dirname + "/" + filename));
-                writer = new BufferedWriter(new FileWriter(dirname + "/" + FileGenerator.getOutputFilename()));
-            } else {
-                reader = new BufferedReader(new FileReader(FileGenerator.getInputFilename()));
-                writer = new BufferedWriter(new FileWriter(FileGenerator.getOutputFilename()));
-            }
-            while((line = reader.readLine()) != null){
-                line = encodeLine(line, key);
-                writer.write(line + "\n");
-            }
-            writer.close();
-            reader.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        return "";
+        return encodeText(plainText, key);
     }
 
     @Override
     public String decode(String cipherText) {
-        try {
-            if(!FileGenerator.getDirectorySrc().equals("")){
-                reader = new BufferedReader(new FileReader(FileGenerator.getDirectorySrc() + "/" + FileGenerator.getOutputFilename()));
-            } else {
-                reader = new BufferedReader(new FileReader(FileGenerator.getOutputFilename()));
-            }
-            String text = "", line;
-            while((line = reader.readLine()) != null){
-                text += line.toString();
-            }
-            if(!FileGenerator.getDirectorySrc().equals("")){
-                writer = new BufferedWriter(new FileWriter(FileGenerator.getDirectorySrc() + "/" + FileGenerator.getOutputFilename()));
-            } else {
-                writer = new BufferedWriter(new FileWriter(FileGenerator.getOutputFilename()));
-            }
-            text = encodeLine(text, -this.key);
-            writer.write(text);
-            writer.close();
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
+        return encodeText(cipherText, -key);
     }
 
-    private String encodeLine(String line, int step){
-        char[] line_characters = line.toCharArray();
+    private String encodeText(String text, int step){
+        char[] line_characters = text.toCharArray();
         int index = 0;
         for(char ch : line_characters){
             if((int)ch >= ASCII.getMINValue() && (int)ch <= ASCII.getMAXValue()){
-                line_characters[index++] = encodeSymbol(ch);
+                line_characters[index++] = encodeCharacter(ch, step);
             } else {
                 line_characters[index++] = ch;
             }
         }
-        line = "";
+        text = "";
         for(char ch : line_characters){
-            line += ch;
+            text += ch;
         }
-        return line;
+        return text;
     }
 
-    private char encodeSymbol(char character){
-        if(this.key > 0){
-            return ((int)character >= ASCII.getMAXValue() - this.key) ? (char)((int)character - ((ASCII.getMAXValue() - ASCII.getMINValue()) - this.key)) : (char)((int)character + this.key);
+    private char encodeCharacter(char character, int step){
+        if(step > 0){
+            return ((int)character >= ASCII.getMAXValue() - step) ? (char)((int)character - ((ASCII.getMAXValue() - ASCII.getMINValue()) - step)) : (char)((int)character + step);
         } else {
-            return ((int)character <= ASCII.getMINValue() - this.key) ? (char)((int)character + ((ASCII.getMAXValue() - ASCII.getMINValue()) + this.key)) : (char)((int)character + this.key);
+            return ((int)character <= ASCII.getMINValue() - step) ? (char)((int)character + ((ASCII.getMAXValue() - ASCII.getMINValue()) + step)) : (char)((int)character + step);
         }
     }
 
-    public void setReader(BufferedReader reader) {
-        this.reader = reader;
-    }
-
-    public void setWriter(BufferedWriter writer) {
-        this.writer = writer;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
+    @Override
+    public String toString() {
+        return Integer.toString(key);
     }
 }

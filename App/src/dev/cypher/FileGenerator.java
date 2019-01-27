@@ -5,30 +5,35 @@ import java.io.*;
 final public class FileGenerator implements FileManager {
 
     // Directory src and object
-    private static File directory;
-    private static String directorySrc;
+    private File directory;
+    private String directorySrc;
 
     // Input/output files names and objects
-    private static File inputFile, outputFile;
-    private static String inputFilename, outputFilename;
-    private static BufferedWriter writer;
-    private static BufferedReader reader;
+    private File file;
+    private String filename;
+    private BufferedWriter writer;
+    private BufferedReader reader;
 
     @Override
-    public BufferedReader readFile(String path) {
+    public String readFile(String path) {
+        String outputText = "";
         try{
-            reader = (!directorySrc.equals("") ? new BufferedReader(new FileReader(directorySrc + "/" + inputFilename)) : new BufferedReader(new FileReader(inputFilename)));
+            reader = (!directorySrc.equals("") ? new BufferedReader(new FileReader(directorySrc + "/" + path)) : new BufferedReader(new FileReader(path)));
+            String text;
+            while((text = reader.readLine()) != null){
+                outputText += text + "\n";
+            }
             reader.close();
         } catch(IOException exception){
             exception.printStackTrace();
         }
-        return reader;
+        return outputText;
     }
 
     @Override
     public boolean writeFile(String path, String body) {
         try {
-            writer = (!directorySrc.equals("") ? new BufferedWriter(new FileWriter(directorySrc + "/" + inputFilename)) : new BufferedWriter(new FileWriter(inputFilename)));
+            writer = (!directorySrc.equals("") ? new BufferedWriter(new FileWriter(directorySrc + "/" + path)) : new BufferedWriter(new FileWriter(path)));
             writer.write(body);
             writer.close();
             return true;
@@ -39,23 +44,13 @@ final public class FileGenerator implements FileManager {
     }
 
     @Override
-    public void createFile(String filename, boolean state) {
-        if(state){
-            inputFilename = filename;
-            inputFile = (!directorySrc.equals("")) ? new File(directorySrc + "/" + inputFilename) : new File(inputFilename);
-            try {
-                inputFile.createNewFile();
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        } else {
-            outputFilename = filename;
-            outputFile = (!directorySrc.equals("")) ? new File(directorySrc + "/" + inputFilename) : new File(inputFilename);
-            try {
-                outputFile.createNewFile();
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
+    public void createFile(String filename) {
+        this.filename = filename;
+        file = (!directorySrc.equals("")) ? new File(directorySrc + "/" + this.filename) : new File(this.filename);
+        try {
+            file.createNewFile();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -66,23 +61,19 @@ final public class FileGenerator implements FileManager {
         directory.mkdir();
     }
 
-    public static String getInputFilename(){
-        return inputFilename;
+    public String getFilename() {
+        return filename;
     }
 
-    public static String getOutputFilename(){
-        return inputFilename;
-    }
-
-    public static String getDirectorySrc(){
+    public String getDirectorySrc(){
         return directorySrc;
     }
 
-    public static BufferedReader getReader(){
+    public BufferedReader getReader(){
         return reader;
     }
 
-    public static BufferedWriter getWriter(){
+    public BufferedWriter getWriter(){
         return writer;
     }
 }
