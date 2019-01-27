@@ -1,7 +1,5 @@
 package dev.cypher;
 
-import java.io.*;
-
 final public class Caesar implements Cypher {
 
     private int key;
